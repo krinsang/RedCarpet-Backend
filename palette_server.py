@@ -47,8 +47,27 @@ def classify ():
         image_content = base64.b64encode(img_jpg)
         res_json = goog_cloud_vison(image_content)
         res_json['description'] = 'Label Detection (Google Cloud Vision)'
-
-        return jsonify(res_json)
+        descriptions = [None] * 10
+	index = 0
+	for i in res_json['responses'][0]['labelAnnotations']:
+		descriptions [index] = i['description']
+		index += 1
+	descriptions = {'descriptions':descriptions}
+	searchParses(descriptions)
+	return jsonify(descriptions)
+	#return jsonify(res_json)
 	#return "jpg received"
 
 app.run(host="159.65.33.47", port=default_port)
+
+def searchParses(descriptions):
+	query = ""
+	print("in searchParses")
+	for i in range(3):
+		query += (descriptions['descriptions'][i] + ' ')
+	encoded = urllib.quote(query)
+	rawData = urllib.urlopen('http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=' + encoded)
+	jsonData = json.loads(rawData)
+	print(jsonData)
+	results = jsonData['responseData']['results']
+	print(jsonify(results))
