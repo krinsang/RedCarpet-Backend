@@ -30,12 +30,12 @@ def goog_cloud_vison (image_content):
 
 
 @app.route('/', methods=['GET'])
-def hello ():
+def hello():
     return 'Hello! This is palette_server.'
 
 
 @app.route('/api/classify', methods=['POST'])
-def classify ():
+def classify():
     #print(requests.files['file'])
     #print(jsonify(requests))	    
     #if ('jpg' in requests.files['file']):
@@ -53,21 +53,27 @@ def classify ():
 		descriptions [index] = i['description']
 		index += 1
 	descriptions = {'descriptions':descriptions}
-	searchParses(descriptions)
-	return jsonify(descriptions)
-	#return jsonify(res_json)
+	print("Before searchParses func")
+	return searchParses(descriptions)
 	#return "jpg received"
 
-app.run(host="159.65.33.47", port=default_port)
-
 def searchParses(descriptions):
-	query = ""
-	print("in searchParses")
-	for i in range(3):
-		query += (descriptions['descriptions'][i] + ' ')
-	encoded = urllib.quote(query)
-	rawData = urllib.urlopen('http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=' + encoded)
-	jsonData = json.loads(rawData)
-	print(jsonData)
-	results = jsonData['responseData']['results']
-	print(jsonify(results))
+        query = ""
+        print("in searchParses")
+        for i in range(3):
+                query += (descriptions['descriptions'][i] + ' ')
+                print(i)
+        subscription_key = "e9dbf70ca16c4533932bd31b5bb204bb"
+        assert subscription_key
+        search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
+        headers = {"Ocp-Apim-Subscription-Key" : subscription_key}
+        params = {"q": query, "textDecorations":True, "textFormat":"HTML"}
+        response = requests.get(search_url, headers = headers, params = params)
+        response.raise_for_status()
+        search_results = response.json()
+	print(search_results)
+	return search_results
+
+if __name__ == '__main__':                                 
+	app.run(host="159.65.33.47", port=default_port)
+
