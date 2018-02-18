@@ -1,4 +1,3 @@
-# coding: utf-8
 from flask import Flask, request, jsonify
 import urllib
 import base64
@@ -21,7 +20,9 @@ def goog_cloud_vison (image_content):
             'features': [{
 		'type': 'LABEL_DETECTION',
 		'maxResults': 10,
-	    }]
+	    },{ 
+		'type': 'LOGO_DETECTION',
+		'maxResults': 10}]
         }]
     })
 
@@ -31,16 +32,28 @@ def goog_cloud_vison (image_content):
 
 @app.route('/', methods=['GET'])
 def hello():
-    return 'Hello! This is palette_server.'
+    api_dict = {
+		'classify route(Get, Post)' : '/api/classify/'
+		}
+	
+    return api_dict, 200
 
-
-@app.route('/api/classify', methods=['POST'])
+@app.route('/api/classify/', methods=['GET', 'POST'])
 def classify():
-    #print(requests.files['file'])
-    #print(jsonify(requests))	    
-    #if ('jpg' in requests.files['file']):
+    if request.form:
+	 
+	 res_json = goog_cloud_vison(request.form['data'])
+	 print(res_json)         
+	 res_json['description'] = 'Label Detection (Google Cloud Vision)'
+         descriptions = [None] * 10
+         index = 0
+         for i in res_json['responses'][0]['labelAnnotations']:
+               descriptions[index] = i['description']
+               index += 1
+         descriptions = {'descriptions': descriptions}
+         return searchParses(descriptions)
+    else:	    
 	print("in the if")
-        #image_base64_str = tfpp_json['jpg'].replace('data:image/jpeg;base64,', '')
         f = open("vie.jpg",'r+')
 	img_jpg = f.read()
         image_content = base64.b64encode(img_jpg)
@@ -53,7 +66,6 @@ def classify():
 		index += 1
 	descriptions = {'descriptions':descriptions}
 	return searchParses(descriptions)
-	#return "jpg received"
 
 def searchParses(descriptions):
         query = ""
@@ -70,12 +82,10 @@ def searchParses(descriptions):
         search_results = response.json()
 	webSites = [None] * 5
 	for i in range(5):
-		#search_results['webPages']['value']:
-		#print(i)
 		webSites[i] = (search_results['webPages']['value'][i]['url'])
-	#print(webSites)
 	webSites = {'webSites' : webSites}
 	return jsonify(webSites)
+
 if __name__ == '__main__':                                 
 	app.run(host="159.65.33.47", port=default_port)
 
