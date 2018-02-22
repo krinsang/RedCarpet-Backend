@@ -7,8 +7,8 @@ This github repo contains the files needed to deploy the <b>Digital Ocean</b> Ba
 <h2>Requirements</h2>
 <p>In order to deploy the backend implementation, follow these steps:
  <li>Instantiate a cloud server of your choice that is running Ubuntu.</li>
-  <li>Install Python3 and Python pip using:<p></p>
-    <pre>sudo apt-get update<p></p>
+  <li>Install Python3 and Python pip using:
+    <pre><p></p>sudo apt-get update<p></p>
     sudo apt-get install python3<p></p>
     sudo apt-get install python-pip</pre><p></p>
   </li></p>
