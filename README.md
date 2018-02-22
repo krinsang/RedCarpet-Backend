@@ -11,7 +11,7 @@ This github repo contains the files needed to deploy the <b>Digital Ocean</b> Ba
     <pre>
     sudo apt-get update
     sudo apt-get install python3
-    sudo apt-get install python-pip</pre><p></p>
+    sudo apt-get install python3-pip</pre><p></p>
   </li></p>
   <li>Install the necessary Python Modules using pip. The modules are listed in the file <b>"pip_modules.txt"</b></li>
 <p></p>
