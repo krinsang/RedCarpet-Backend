@@ -7,6 +7,10 @@ from pprint import pprint
 import os
 import urllib
 import re
+#importing the libraries
+from urllib import urlopen
+from bs4 import BeautifulSoup
+import lxml
 
 app = Flask(__name__)
 default_port = 8000
@@ -14,6 +18,39 @@ default_port = 8000
 GOOGLE_CLOUD_VISION_API_URL = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDVnGCR7OrzoJfL5lkmi8MiYS67Zv_p9ZU'
 
 
+'''
+Link Ranking system process:
+    Once we have database ready, check if link returned is from an advertisers website
+    If so, rank higher. 
+
+    If from Amazon, we add our referer link
+    Rank these higher.
+
+    def rank_links(websites):
+'''
+
+
+def get_meta(websites):
+    '''given list of websites, get meta data about those sites'''
+
+    final_dict = {}
+
+    # loop through the website
+    for link in websites:
+        webpage = urlopen(link).read()
+        soup = BeautifulSoup(webpage, "lxml")
+        title = soup.find("meta",  property="og:title")
+        image = soup.find("meta", property="og:image")
+        description = soup.findAll(attrs={"name":"description"})
+
+        # print(description)
+        title = title["content"] if title else "No meta title given"
+        image = image["content"] if image else "No meta url given"
+
+        desc = description
+        final_dict[link] = [desc, title , image]
+
+    pprint(final_dict)
 
 def get_prices(websites):
     '''given a list of links(website), the function returns a dictionary of website : price on the website'''
@@ -79,7 +116,6 @@ def classify():
 
 def searchParses(descriptions):
     query = ""
-    print("in searchParses")
     for i in range(3):
             query += (descriptions['descriptions'][i] + ' ')
     subscription_key = "e9dbf70ca16c4533932bd31b5bb204bb"
@@ -90,11 +126,16 @@ def searchParses(descriptions):
     response = requests.get(search_url, headers = headers, params = params)
     response.raise_for_status()
     search_results = response.json()
+    pprint(search_results)
     webSites = [None] * 5
     for i in range(5):
 		webSites[i] = (search_results['webPages']['value'][i]['url'])
+
     # get the prices
     get_prices(webSites)
+
+    # get meta data
+    get_meta(webSites)
 
     webSites = {'webSites' : webSites}
     pprint(webSites)
