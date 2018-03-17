@@ -1,0 +1,8 @@
+learner/
+.palette_sandboxed.py.swp
+palette_server.ini
+palette_server.pyc
+palette_serverenv/
+wsgi.py
+wsgi.pyc
+
