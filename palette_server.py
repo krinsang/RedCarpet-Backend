@@ -17,7 +17,6 @@ default_port = 8000
 
 GOOGLE_CLOUD_VISION_API_URL = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDVnGCR7OrzoJfL5lkmi8MiYS67Zv_p9ZU'
 
-
 '''
 Link Ranking system process:
     Once we have database ready, check if link returned is from an advertisers website
@@ -61,7 +60,7 @@ def get_prices(websites):
         rawHTML = str(urllib.urlopen(link).read())
 
         # REGEX look for price(CHECKME)
-        prices = re.findall(r"\$[^\]]+", rawHTML)
+        # prices = re.findall(r"\$[^\]]+", rawHTML)
         # pprint(prices)
 
 
@@ -118,7 +117,7 @@ def searchParses(descriptions):
     query = ""
     for i in range(3):
             query += (descriptions['descriptions'][i] + ' ')
-    subscription_key = "e9dbf70ca16c4533932bd31b5bb204bb"
+    subscription_key = "08adc37931234833b440dc054123937c"
     assert subscription_key
     search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
     headers = {"Ocp-Apim-Subscription-Key" : subscription_key}
@@ -126,16 +125,12 @@ def searchParses(descriptions):
     response = requests.get(search_url, headers = headers, params = params)
     response.raise_for_status()
     search_results = response.json()
-    pprint(search_results)
+
+
     webSites = [None] * 5
     for i in range(5):
-		webSites[i] = (search_results['webPages']['value'][i]['url'])
-
-    # get the prices
-    get_prices(webSites)
-
-    # get meta data
-    get_meta(webSites)
+        # pprint(search_results['webPages']['value'])
+        webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl']}
 
     webSites = {'webSites' : webSites}
     pprint(webSites)
