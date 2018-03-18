@@ -94,23 +94,31 @@ def hello():
 @app.route('/api/classify/', methods=['GET', 'POST'])
 def classify():
 
-    # if request use already encoded image, else use sample bag image(vie.jpg)
     if request.form:
-        image_content = goog_cloud_vison(request.form['data'])
+	 res_json = goog_cloud_vison(request.form['data'])
+	 print(res_json)         
+	 res_json['description'] = 'Label Detection (Google Cloud Vision)'
+         descriptions = [None] * 10
+         index = 0
+         for i in res_json['responses'][0]['labelAnnotations']:
+               descriptions[index] = i['description']
+               index += 1
+         descriptions = {'descriptions': descriptions}
+         return searchParses(descriptions)
     else:
+        print("in the if")
         f = open("vie.jpg",'r+')
         img_jpg = f.read()
         image_content = base64.b64encode(img_jpg)
-
-    res_json = goog_cloud_vison(image_content)
-    res_json['description'] = 'Label Detection (Google Cloud Vision)'
-    descriptions = [None] * 10
-    index = 0
-    for i in res_json['responses'][0]['labelAnnotations']:
-        descriptions[index] = i['description']
-        index += 1
-    descriptions = {'descriptions': descriptions}
-    return searchParses(descriptions)
+        res_json = goog_cloud_vison(image_content)
+        res_json['description'] = 'Label Detection (Google Cloud Vision)'
+        descriptions = [None] * 10
+        index = 0
+        for i in res_json['responses'][0]['labelAnnotations']:
+            descriptions [index] = i['description']
+            index += 1
+        descriptions = {'descriptions':descriptions}
+        return searchParses(descriptions)
 
 
 def searchParses(descriptions):
