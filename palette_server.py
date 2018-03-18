@@ -95,6 +95,7 @@ def hello():
 def classify():
 
     if request.form:
+	 print('in response')
 	 res_json = goog_cloud_vison(request.form['data'])
 	 print(res_json)         
 	 res_json['description'] = 'Label Detection (Google Cloud Vision)'
