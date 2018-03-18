@@ -125,21 +125,21 @@ def classify():
 def searchParses(descriptions):
     query = ""
     for i in range(3):
-            query += (descriptions['descriptions'][i] + ' ')
-    subscription_key = "08adc37931234833b440dc054123937c"
-    assert subscription_key
-    search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
-    headers = {"Ocp-Apim-Subscription-Key" : subscription_key}
-    params = {"q": query, "textDecorations":True, "textFormat":"HTML"}
-    response = requests.get(search_url, headers = headers, params = params)
+        query += (descriptions['descriptions'][i] + '+')
+    api_url = 'http://api.shopstyle.com/api/v2/products?pid=uid3456-40727384-28Y&fts=' + query + '&offset=0&limit=10'
+    response = requests.get(api_url) 
+    # subscription_key = "08adc37931234833b440dc054123937c"
+    # assert subscription_key
+    # search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
+    # headers = {"Ocp-Apim-Subscription-Key" : subscription_key}
+    # params = {"q": query, "textDecorations":True, "textFormat":"HTML"}
+    # response = requests.get(search_url, headers = headers, params = params)
     response.raise_for_status()
     search_results = response.json()
-
-
     webSites = [None] * 5
     for i in range(5):
         # pprint(search_results['webPages']['value'])
-        webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl']}
+        webSites[i] = {'url' : search_results['products'][i]['pageUrl'], 'image': search_results['products'][i]['image']['Original']['url']}
 
     webSites = {'webSites' : webSites}
     pprint(webSites)
