@@ -124,9 +124,11 @@ def classify():
 
 def searchParses(descriptions):
     query = ""
+
     for i in range(3):
         query += (descriptions['descriptions'][i] + '+')
-    api_url = 'http://api.shopstyle.com/api/v2/products?pid=uid3456-40727384-28Y&fts=' + query + '&offset=0&limit=10'
+
+    api_url = 'http://api.shopstyle.com/api/v2/products?pid=uid3456-40727384-28Y&format=json&fts=' + query + '&offset=0&limit=10'
     response = requests.get(api_url) 
     # subscription_key = "08adc37931234833b440dc054123937c"
     # assert subscription_key
