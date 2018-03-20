@@ -11,6 +11,7 @@ import re
 from urllib import urlopen
 from bs4 import BeautifulSoup
 import lxml
+from urlparse import urlparse
 
 app = Flask(__name__)
 default_port = 8000
@@ -25,44 +26,27 @@ Link Ranking system process:
     If from Amazon, we add our referer link
     Rank these higher.
 
-    def rank_links(websites):
 '''
 
-
 def get_meta(websites):
-    '''given list of websites, get meta data about those sites'''
-
+    '''given list of websites, get meta data about those sites, used for link ranking'''
     final_dict = {}
 
     # loop through the website
     for link in websites:
-        webpage = urlopen(link).read()
+        # get the domain
+        parsed_uri = urlparse( link['url'] )
+        domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+        webpage = urlopen(domain).read()
+
         soup = BeautifulSoup(webpage, "lxml")
-        title = soup.find("meta",  property="og:title")
-        image = soup.find("meta", property="og:image")
-        description = soup.findAll(attrs={"name":"description"})
+        metas = soup.find_all('meta')
 
-        # print(description)
-        title = title["content"] if title else "No meta title given"
-        image = image["content"] if image else "No meta url given"
-
-        desc = description
-        final_dict[link] = [desc, title , image]
+        desc  = [ meta.attrs['content'] for meta in metas if 'name' in meta.attrs and meta.attrs['name'] == 'description' ]
+        final_dict[domain] = [desc]
 
     pprint(final_dict)
-
-def get_prices(websites):
-    '''given a list of links(website), the function returns a dictionary of website : price on the website'''
-
-    # loop through the website
-    for link in websites:
-        # get rawhtml content
-        rawHTML = str(urllib.urlopen(link).read())
-
-        # REGEX look for price(CHECKME)
-        # prices = re.findall(r"\$[^\]]+", rawHTML)
-        # pprint(prices)
-
+    return websites
 
 def goog_cloud_vison (image_content):
     api_url = GOOGLE_CLOUD_VISION_API_URL
@@ -136,11 +120,11 @@ def searchParses(descriptions):
     search_results = response.json()
 
 
-    webSites = [None] * 5
-    for i in range(5):
-        # pprint(search_results['webPages']['value'])
+    webSites = [None] * 10
+    for i in range(10):
         webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl']}
-
+    
+    webSites = get_meta(webSites)
     webSites = {'webSites' : webSites}
     pprint(webSites)
     return jsonify(webSites)
