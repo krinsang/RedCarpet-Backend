@@ -1,0 +1,26 @@
+{
+    "csv_file": "data/clothes.csv",
+    "image_path": "data/images",
+    "image_dim": 224,
+    "cnn": {
+        "checkpoint": "./checkpoints/cnn/",
+        "learning_rate": 1e-5,
+        "num_steps": 1000,
+        "batch_size": 100,
+        "num_classes": 50
+    },
+    "challenge": {
+        "checkpoint": "./checkpoints/challenge/",
+        "learning_rate": 1e-5,
+        "num_steps": 7000,
+        "batch_size": 128,
+        "num_classes": 10,
+	"classifier": {
+            "checkpoint": "./checkpoints/challenge_classifier/",
+            "learning_rate": 1e-4,
+            "num_steps": 5000,
+            "batch_size": 256,
+            "num_classes": 5
+        }
+    }
+}
