@@ -71,8 +71,8 @@ def cnn(X):
     fifth_third_layer = conv(fifth_second_layer, 14, 3, 512,512,1)
     fifth_third_layer = tf.reshape(fifth_third_layer, [-1, 14,14,512])
     fifth_third_layer_pooled = tf.nn.max_pool(fifth_third_layer, ksize = [1, 2, 2, 1], strides = [1,2,2,1], padding = 'VALID', name='pool4')
-    fifth_third_layer_pooled = tf.reshape(fifth_third_layer_pooled, [-1, 7*512])
-    fc1 = fully_connected(fifth_third_layer_pooled, 7*512, 4096)
+    fifth_third_layer_pooled = tf.reshape(fifth_third_layer_pooled, [-1, 7*7*512])
+    fc1 = fully_connected(fifth_third_layer_pooled, 7*7*512, 4096)
     fc2 = fully_connected(fc1, 4096, 4096)
     fc3 = fully_connected(fc2, 4096, 4096)
 
