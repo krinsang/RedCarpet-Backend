@@ -6,7 +6,7 @@ Utility functions
 import os
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 def restore(sess, checkpoint_path):
     """
@@ -116,47 +116,52 @@ def make_training_plot():
     Runs the setup for an interactive matplotlib graph that logs the loss and
     accuracy
     """
-    plt.ion()
-    plt.title('Supervised Network Training')
-    plt.subplot(1, 2, 1)
-    plt.xlabel('Batch Index')
-    plt.ylabel('Validation Accuracy')
-    plt.subplot(1, 2, 2)
-    plt.xlabel('Batch Index')
-    plt.ylabel('Validation Loss')
+   # plt.ion()
+   # plt.title('Supervised Network Training')
+    #plt.subplot(1, 2, 1)
+    #plt.xlabel('Batch Index')
+    #plt.ylabel('Validation Accuracy')
+    #plt.subplot(1, 2, 2)
+    #plt.xlabel('Batch Index')
+    #plt.ylabel('Validation Loss')
+    pass
 
 def make_ae_training_plot():
     """
     Runs the setup for an interactive matplotlib graph that logs the loss
     """
-    plt.ion()
-    plt.title('Autoencoder Training')
-    plt.xlabel('Batch Index')
-    plt.ylabel('Validation MSE')
+    #plt.ion()
+    #plt.title('Autoencoder Training')
+    #plt.xlabel('Batch Index')
+    #plt.ylabel('Validation MSE')
+    pass
 
 def update_training_plot(batch_index, valid_acc, valid_loss):
     """
     Updates the training plot with a new data point for loss and accuracy
     """
-    plt.subplot(1, 2, 1)
-    plt.scatter(batch_index, valid_acc, c='b')
-    plt.subplot(1, 2, 2)
-    plt.scatter(batch_index, valid_loss, c='r')
-    plt.pause(0.00001)
+    #plt.subplot(1, 2, 1)
+    #plt.scatter(batch_index, valid_acc, c='b')
+    #plt.subplot(1, 2, 2)
+    #plt.scatter(batch_index, valid_loss, c='r')
+    #plt.pause(0.00001)
+    pass
 
 def update_ae_training_plot(batch_index, valid_loss):
     """
     Updates the training plot with a new data point for loss
     """
-    plt.scatter(batch_index, valid_loss, c='r')
-    plt.pause(0.00001)
+    #plt.scatter(batch_index, valid_loss, c='r')
+    #plt.pause(0.00001)
+    pass
 
 def hold_training_plot():
     """
     Keep the program alive to display the training plot
     """
-    plt.ioff()
-    plt.show()
+    #plt.ioff()
+    #plt.show()
+    pass
 
 def denormalize_image(image):
     """ Rescale the image's color space from (min, max) to (0, 1) """
