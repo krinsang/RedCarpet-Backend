@@ -43,6 +43,7 @@ def cnn(X):
     """
     # TODO: implement this function
     #zero_layer = input_layer(X)
+
     first_layer = conv(X, img_size = 224, filter_size = 3, in_length = 3, num_filter = 64, stride_size = 1)
     second_layer = conv(first_layer, 224, 3, 64, 64, 1)
     second_layer = tf.reshape(second_layer, [-1, 224, 224, 64])
@@ -55,23 +56,23 @@ def cnn(X):
 
     fifth_layer = conv(fourth_layer_pooled, 56, 3, 128, 256, 1)
     sixth_layer = conv(fifth_layer, 56, 3, 256, 256, 1)
-    #third_third_layer = conv(sixth_layer, 56, 3, 256, 256, 1)
-    #third_third_layer = tf.reshape(third_third_layer, [-1, 56,56,256])
-    third_third_layer = tf.reshape(sixth_layer, [-1, 56,56,256])
+    third_third_layer = conv(sixth_layer, 56, 3, 256, 256, 1)
+    third_third_layer = tf.reshape(third_third_layer, [-1, 56,56,256])
+    #third_third_layer = tf.reshape(sixth_layer, [-1, 56,56,256])
     third_third_layer_pooled = tf.nn.max_pool(third_third_layer, ksize = [1, 2, 2, 1], strides = [1,2,2,1], padding = 'VALID', name='pool3')
-    '''
+    
     fourth_first_layer = conv(third_third_layer_pooled, 28, 3, 256, 512, 1)
     fourth_second_layer = conv(fourth_first_layer, 28, 3, 512,512, 1)
-    #fourth_third_layer = conv(fourth_second_layer, 28, 3, 512,512, 1)
-    #fourth_third_layer = tf.reshape(fourth_third_layer, [-1, 28,28,512])
-    fourth_third_layer = tf.reshape(fourth_second_layer, [-1, 28,28,512])
+    fourth_third_layer = conv(fourth_second_layer, 28, 3, 512,512, 1)
+    fourth_third_layer = tf.reshape(fourth_third_layer, [-1, 28,28,512])
+    #fourth_third_layer = tf.reshape(fourth_second_layer, [-1, 28,28,512])
     fourth_third_layer_pooled = tf.nn.max_pool(fourth_third_layer, ksize = [1, 2, 2, 1], strides = [1,2,2,1], padding = 'VALID', name='pool4')
 
     fifth_first_layer = conv(fourth_third_layer_pooled, 14, 3, 512,512,1)
     fifth_second_layer = conv(fifth_first_layer, 14, 3, 512,512,1)
-    #fifth_third_layer = conv(fifth_second_layer, 14, 3, 512,512,1)
-    #fifth_third_layer = tf.reshape(fifth_third_layer, [-1, 14,14,512])
-    fifth_third_layer = tf.reshape(fifth_second_layer, [-1, 14,14,512])
+    fifth_third_layer = conv(fifth_second_layer, 14, 3, 512,512,1)
+    fifth_third_layer = tf.reshape(fifth_third_layer, [-1, 14,14,512])
+    #fifth_third_layer = tf.reshape(fifth_second_layer, [-1, 14,14,512])
     fifth_third_layer_pooled = tf.nn.max_pool(fifth_third_layer, ksize = [1, 2, 2, 1], strides = [1,2,2,1], padding = 'VALID', name='pool4')
     fifth_third_layer_pooled = tf.reshape(fifth_third_layer_pooled, [-1, 7*7*512])
     '''
@@ -89,10 +90,10 @@ def cnn(X):
     fifth_third_layer = tf.reshape(fifth_second_layer, [-1, 14,14,64])
     fifth_third_layer_pooled = tf.nn.max_pool(fifth_third_layer, ksize = [1, 2, 2, 1], strides = [1,2,2,1], padding = 'VALID', name='pool4')
     fifth_third_layer_pooled = tf.reshape(fifth_third_layer_pooled, [-1, 7*7*64])
+    '''
 
 
-
-    fc1 = fully_connected(fifth_third_layer_pooled, 7*7*64, 4096)
+    fc1 = fully_connected(fifth_third_layer_pooled, 7*7*512, 4096)
     fc2 = fully_connected(fc1, 4096, 4096)
 
     output = output_layer(fc2, 4096, 50)
