@@ -25,7 +25,7 @@ def supervised_optimizer(loss):
         (i.e., the operation that minimizes the loss function).
     """
     # TODO: implement this function
-    return tf.train.AdamOptimizer(get('cnn.learning_rate')).minimize(loss)
+    return tf.train.AdamOptimizer(1.0e-5).minimize(loss)
 
 def cross_entropy_loss(labels, logits):
     """
@@ -47,34 +47,13 @@ def accuracy(labels, logits):
         the accuracy value as a Tensorflow Tensor
     """
     # TODO: implement this function
-    
+
     pred = tf.argmax(logits, 1)
+    
     matches = tf.equal(pred, tf.cast(labels, tf.int64))
 
 
     return tf.reduce_mean(tf.cast(matches, tf.float32))
-
-def unsupervised_placeholders():
-    """
-    Constructs the tensorflow placeholders needed as input to the autoencoder
-    model.
-
-    Returns:
-        a tensorflow placeholder for the image data.
-    """
-    # TODO: implement this function
-    return tf.placeholder(tf.float32, [None, 32, 32, 3])
-
-def unsupervised_optimizer(loss):
-    """
-    Constructs the training op needed to train the autoencoder model.
-
-    Returns:
-        the operation that begins the backpropogation through the network
-        (i.e., the operation that minimizes the loss function).
-    """
-    # TODO: implement this function
-    return tf.train.AdamOptimizer(get('autoencoder.learning_rate')).minimize(loss)
 
 def mean_squared_error(images, reconstructed):
     """
@@ -86,35 +65,6 @@ def mean_squared_error(images, reconstructed):
     """
     # TODO: implement this function
     return tf.losses.mean_squared_error(images, reconstructed)
-
-def challenge_placeholders():
-    """
-    Constructs the tensorflow placeholders needed as input to the network.
-
-    Returns:
-        at least two tensorflow placeholders. The first return value should
-        be the placeholder for the image data. The second should be for the
-        class labels. Note that depending on your choice of model you may
-        need to add more placeholders.
-    """
-    # TODO: implement this function
-    images = tf.placeholder(tf.float32, [None, 32, 32, 3])
-    labels = tf.placeholder(tf.int32, [None])
-    keep_prob = tf.placeholder(tf.float32)
-    return images, keep_prob, labels
-
-def challenge_optimizer(loss):
-    """
-    Constructs the training op needed to train the challenge model. Depending
-    on your choice of model, this may be the same as supervised_optimizer.
-
-    Returns:
-        the operation that begins the backpropogation through the network
-        (i.e., the operation that minimizes the loss function).
-    """
-    # TODO: implement this function
-    return tf.train.AdamOptimizer(get('challenge.learning_rate')).minimize(loss)
-
 
 def predictions(logits):
     """
