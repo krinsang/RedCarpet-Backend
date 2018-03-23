@@ -1,12 +1,13 @@
 {
-    "csv_file": "data/clothes.csv",
-    "image_path": "data/images",
+    "train_csv_file": "gs://redcarpetimages/data_train.csv",
+    "eval_csv_file" : "data_eval.csv",
+    "image_path": "img/",
     "image_dim": 224,
     "cnn": {
         "checkpoint": "./checkpoints/cnn/",
         "learning_rate": 1e-5,
         "num_steps": 1000,
-        "batch_size": 100,
+        "batch_size": 512,
         "num_classes": 50
     },
     "challenge": {
