@@ -7,8 +7,10 @@ Dogs Dataset
         - from data.dogs import DogsDataset
         - python -m data.dogs
 """
+import csv
 import numpy as np
 import pandas as pd
+from PIL import Image
 from scipy.misc import imread, imresize
 import os
 from utils import get
@@ -23,11 +25,28 @@ class ClothesDataset:
         self.num_classes = num_classes
         self.mean_vec = np.zeros(3)
         self.std_vec = np.zeros(3)
+        self.metadata = pd.DataFrame(columns=['img_id','image_name', 'attribute_labels', 'category_labels', 'eval'] )
         # Load in all the data we need from disk
-        self.metadata = pd.read_csv(get('csv_file'))
+        with open("gs://redcarpetimages/data_train.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.metadata['img_id'] = [int(x['img_id']) for x in reader]
+        with open("gs://redcarpetimages/data_train.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.metadata['image_name'] = [str(x['image_name']) for x in reader]
+        with open("gs://redcarpetimages/data_train.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.metadata['attribute_labels'] = [int(x['attribute_labels']) for x in reader]
+        with open("gs://redcarpetimages/data_train.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.metadata['category_labels'] = [int(x['category_labels']) for x in reader]
+        with open("gs://redcarpetimages/data_train.csv") as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.metadata['partition'] = [str(x['eval']) for x in reader]
+        print(self.metadata)
+        #self.metadata = pd.read_csv("gs://redcarpetimages/data_train.csv")
         self.semantic_labels = dict(zip(
-            self.metadata['attributes'],
-            self.metadata['category']))
+            self.metadata['attribute_labels'],
+            self.metadata['category_labels']))
 
         if _all:
             self.trainX, self.trainY = self._load_data('train')
@@ -78,15 +97,15 @@ class ClothesDataset:
         X, y = [], []
         if training:
             for i, row in df.iterrows():
-                label = row['category']
+                label = row['category_labels']
                 if label >= self.num_classes: continue
-                image = imread(os.path.join(get('image_path'), row['filename']))
+                image = imread(row['image_name'])
                 X.append(image)
-                y.append(row['category'])
+                y.append(row['category_labels'])
             return np.array(X), np.array(y).astype(int)
         else:
             for i, row in df.iterrows():
-                image = imread(os.path.join(get('image_path'), row['filename']))
+                image = imread(row['image_name'])
                 X.append(image)
             return np.array(X), None
 
@@ -203,7 +222,7 @@ class ClothesDataset:
     def _get_images(self, df):
         X = []
         for i, row in df.iterrows():
-            image = imread(os.path.join(get('image_path'), row['filename']))
+            image = imread(row['image_name'])
             X.append(image)
         return np.array(X)
 
@@ -220,7 +239,7 @@ class ClothesDataset:
         # TODO: Complete this function
         
         temp = []
-        img_dim = get("image_dim")
+        img_dim = 224
         for i in range(X.shape[0]):
             temp.append(imresize(X[i], size=(img_dim, img_dim), interp='bicubic'))
         return np.array(temp)
