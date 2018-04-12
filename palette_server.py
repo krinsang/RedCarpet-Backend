@@ -11,11 +11,19 @@ import re
 from urllib import urlopen
 from bs4 import BeautifulSoup
 import lxml
-
+import ebaysdk 
+import datetime
+from ebaysdk.exception import ConnectionError 
+from ebaysdk.finding import Connection 
+# from amazonproduct import API  
+# from amazon.api import AmazonAPI 
+# from pyaws import ecs 
+# api = API(locale='us')
 app = Flask(__name__)
 default_port = 8000
 
 GOOGLE_CLOUD_VISION_API_URL = 'https://vision.googleapis.com/v1/images:annotate?key=AIzaSyDVnGCR7OrzoJfL5lkmi8MiYS67Zv_p9ZU'
+
 
 '''
 Link Ranking system process:
@@ -30,7 +38,7 @@ Link Ranking system process:
 
 
 def get_meta(websites):
-    '''given list of websites, get meta data about those sites'''
+    ''  'given list of websites, get meta data about those sites'''
 
     final_dict = {}
 
@@ -124,8 +132,11 @@ def classify():
 
 def searchParses(descriptions):
     query = ""
+    amazon_query = ""
     for i in range(3):
             query += (descriptions['descriptions'][i] + ' ')
+            amazon_query += (descriptions['descriptions'][i] + '%20')
+   
     subscription_key = "08adc37931234833b440dc054123937c"
     assert subscription_key
     search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
@@ -137,9 +148,56 @@ def searchParses(descriptions):
 
 
     webSites = [None] * 5
-    for i in range(5):
-        # pprint(search_results['webPages']['value'])
-        webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl']}
+    # for i in range(3):
+    #     # pprint(search_results['webPages']['value'])
+    #     webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl']}
+    # amazon = AmazonAPI('AKIAIG4LJX65WJ6FRXNQ', 'eGHnM8AgGG5YfX6Tjl8dt6OxXb3xTkVvb/gn1MCy', 'teamdiversity-20')
+    # products = amazon.search_n(1, Keywords='kindle', SearchIndex='All')
+    # len(products)
+    # ecs.setLicenseKey('AKIAIG4LJX65WJ6FRXNQ')
+    # books = ecs.ItemSearch('python', SearchIndex='Books')
+    # print(books[0].Title)
+    # for apparel in api.item_search('Apparel', Keywords='Shirt'):
+    #     print '%s: ' % (apparel.ASIN)
+            # amazon_key = 'kK4vFL6Iwq2MHBt99mps166OG5K4yn693QvTNh76' 
+    # amazon_id = 'ijuxp5i7cd'
+    # amazon_url = 'http://webservices.amazon.com/onca/xml?Service=AWSECommerceService&AWSAccessKeyId=AKIAIG4LJX65WJ6FRXNQ&AssociateTag=teamdiversity-20&Operation=ItemSearch&Keywords=Nike&SearchIndex=Apparel&Sort=price'
+    # response = requests.get(amazon_url)
+    # response.raise_for_status()
+    # search_results = response.json()
+    # print(search_results)
+    # api = finding(siteid='EBAY-US', appid='teamdive-redcarpe-PRD-e786e1828-f21c094c')
+
+    # api.execute('findItemsAdvanced', {
+    #     'keywords': 'laptop',
+    #     'categoryId' : ['177', '111422'],
+    #     'itemFilter': [
+    #         {'name': 'Condition', 'value': 'Used'},
+    #         {'name': 'MinPrice', 'value': '200', 'paramName': 'Currency', 'paramValue': 'GBP'},
+    #         {'name': 'MaxPrice', 'value': '400', 'paramName': 'Currency', 'paramValue': 'GBP'}
+    #     ],
+    #     'paginationInput': {
+    #         'entriesPerPage': '25',
+    #         'pageNumber': '1'    
+    #     },
+    #     'sortOrder': 'CurrentPriceHighest'
+    # })
+
+    # dictstr = api.response_dict()
+
+    # for item in dictstr['searchResult']['item']:
+    #     print "ItemID: %s" % item['itemId'].value
+    #     print "Title: %s" % item['title'].value
+    #     print "CategoryID: %s" % item['primaryCategory']['categoryId'].value
+    api = Connection(appid='teamdive-redcarpe-PRD-e786e1828-f21c094c', config_file=None)
+    response = api.execute('findItemsAdvanced', {'keywords': query, 'sortOrder': 'CurrentPriceLowest'})
+    items = response.reply.searchResult.item
+    
+    for i in range(2): 
+        webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl'], 'price': '0.00'}
+
+    for i in range(2,5):
+        webSites[i] = {'url': items[i].viewItemURL, 'image': items[i].galleryURL, 'price': items[i].sellingStatus.currentPrice.value}
 
     webSites = {'webSites' : webSites}
     pprint(webSites)
