@@ -29,10 +29,8 @@ GOOGLE_CLOUD_VISION_API_URL = 'https://vision.googleapis.com/v1/images:annotate?
 Link Ranking system process:
     Once we have database ready, check if link returned is from an advertisers website
     If so, rank higher. 
-
     If from Amazon, we add our referer link
     Rank these higher.
-
     def rank_links(websites):
 '''
 
@@ -194,10 +192,10 @@ def searchParses(descriptions):
     items = response.reply.searchResult.item
     
     for i in range(2): 
-        webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl'], 'price': '0.00'}
+        webSites[i] = {'url': items[i].viewItemURL, 'image': items[i].galleryURL, 'price': items[i].sellingStatus.currentPrice.value}
 
     for i in range(2,5):
-        webSites[i] = {'url': items[i].viewItemURL, 'image': items[i].galleryURL, 'price': items[i].sellingStatus.currentPrice.value}
+        webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl'], 'price': '0.00'}
 
     webSites = {'webSites' : webSites}
     pprint(webSites)
@@ -205,4 +203,3 @@ def searchParses(descriptions):
 
 if __name__ == '__main__':                                 
 	app.run(host='0.0.0.0', port=default_port)
-
