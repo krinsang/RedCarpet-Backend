@@ -7,6 +7,7 @@ from pprint import pprint
 import os
 import urllib
 import re
+import random 
 #importing the libraries
 from urllib import urlopen
 from bs4 import BeautifulSoup
@@ -29,11 +30,18 @@ GOOGLE_CLOUD_VISION_API_URL = 'https://vision.googleapis.com/v1/images:annotate?
 Link Ranking system process:
     Once we have database ready, check if link returned is from an advertisers website
     If so, rank higher. 
+
     If from Amazon, we add our referer link
     Rank these higher.
+
     def rank_links(websites):
 '''
 
+cat_labels = []
+with open("categories.txt", "r+") as f:
+    lines = f.readlines()
+    for line in lines: 
+        cat_labels.append(line) 
 
 def get_meta(websites):
     ''  'given list of websites, get meta data about those sites'''
@@ -89,6 +97,9 @@ def goog_cloud_vison (image_content):
     res = requests.post(api_url, data=req_body)
     return res.json()
 
+@app.errorhandler(500)
+def internal_error(error):
+    return "page not found. please try again" 
 
 @app.route('/', methods=['GET'])
 def hello():
@@ -125,16 +136,17 @@ def classify():
             descriptions [index] = i['description']
             index += 1
         descriptions = {'descriptions':descriptions}
-        return searchParses(descriptions)
-
-
+        fuck = searchParses(descriptions)
+	print(fuck)
+	return fuck
 def searchParses(descriptions):
     query = ""
-    amazon_query = ""
+    global cat_labels 
+    query = random.choice(cat_labels) 
+    ebay_query = ""
     for i in range(3):
             query += (descriptions['descriptions'][i] + ' ')
-            amazon_query += (descriptions['descriptions'][i] + '%20')
-   
+   	    ebay_query += (descriptions['descriptions'][i] + ' ') 
     subscription_key = "08adc37931234833b440dc054123937c"
     assert subscription_key
     search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
@@ -187,19 +199,24 @@ def searchParses(descriptions):
     #     print "ItemID: %s" % item['itemId'].value
     #     print "Title: %s" % item['title'].value
     #     print "CategoryID: %s" % item['primaryCategory']['categoryId'].value
-    api = Connection(appid='teamdive-redcarpe-PRD-e786e1828-f21c094c', config_file=None)
-    response = api.execute('findItemsAdvanced', {'keywords': query, 'sortOrder': 'CurrentPriceLowest'})
-    items = response.reply.searchResult.item
+    try:
+        api = Connection(appid='teamdive-redcarpe-PRD-e786e1828-f21c094c', config_file=None)
+        response = api.execute('findItemsAdvanced', {'keywords': ebay_query, 'sortOrder': 'CurrentPriceLowest'})
+        items = response.reply.searchResult.item
+	print(items)
+	for i in range(2): 
+            webSites[i] = {'url': items[i].viewItemURL, 'image': items[i].galleryURL, 'price': items[i].sellingStatus.currentPrice.value}
+        for i in range(2,5):
+            webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl'], 'price': '0.00'}
     
-    for i in range(2): 
-        webSites[i] = {'url': items[i].viewItemURL, 'image': items[i].galleryURL, 'price': items[i].sellingStatus.currentPrice.value}
-
-    for i in range(2,5):
-        webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl'], 'price': '0.00'}
-
+    except Exception, e:
+	for i in range(5):
+	     webSites[i] = {'url' : search_results['images']['value'][i]['hostPageUrl'], 'image': search_results['images']['value'][i]['contentUrl'], 'price': '0.00'}
     webSites = {'webSites' : webSites}
     pprint(webSites)
     return jsonify(webSites)
 
 if __name__ == '__main__':                                 
 	app.run(host='0.0.0.0', port=default_port)
+
+
