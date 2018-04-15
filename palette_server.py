@@ -38,7 +38,7 @@ Link Ranking system process:
 '''
 
 cat_labels = []
-with open("categories.txt", "r+") as f:
+with open("categories.csv", "r+") as f:
     lines = f.readlines()
     for line in lines: 
         cat_labels.append(line) 
